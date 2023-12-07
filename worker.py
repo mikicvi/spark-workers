@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask import jsonify
 import requests
 import os
 import json
@@ -40,6 +41,26 @@ def delete():
     token=get_api_key()
     ret = deleteWorker(token,request.form['num'])
     return ret
+  
+@app.route("/get_active_vms")
+def get_active_vms():
+    token = get_api_key()
+    vm_names = get_active_vm_names(token)
+
+    return jsonify({"active_vms": vm_names})
+
+def get_active_vm_names(token):
+    url = 'https://www.googleapis.com/compute/v1/projects/spark-407315/zones/europe-west2-c/instances'
+    headers = {"Authorization": "Bearer " + token}
+    resp = requests.get(url, headers=headers)
+
+    if resp.status_code == 200:
+        instances = resp.json().get('items', [])
+        vm_names = [instance['name'] for instance in instances]
+        return vm_names
+    else:
+        print(resp.content)
+        return []
 
 
 def addWorker(token, num):
