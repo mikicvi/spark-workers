@@ -31,6 +31,15 @@ def add():
     token=get_api_key()
     ret = addWorker(token,request.form['num'])
     return ret
+  
+@app.route("/delete",methods=['GET','POST'])
+def delete():
+  if request.method=='GET':
+    return "Use post to delete"
+  else:
+    token=get_api_key()
+    ret = deleteWorker(token,request.form['num'])
+    return ret
 
 
 def addWorker(token, num):
@@ -46,6 +55,16 @@ def addWorker(token, num):
     else:
       print(resp.content)
       return "Error\n"+resp.content.decode('utf-8') + '\n\n\n'+data
+    
+def deleteWorker(token, num):
+    url='https://www.googleapis.com/compute/v1/projects/spark-407315/zones/europe-west2-c/instances/slave'+str(num)
+    headers={"Authorization": "Bearer "+token}
+    resp=requests.delete(url,headers=headers)
+    if resp.status_code==200:     
+      return "Done"
+    else:
+      print(resp.content)
+      return "Error\n"+resp.content.decode('utf-8')
 
 
 
