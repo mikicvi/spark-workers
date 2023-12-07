@@ -55,12 +55,12 @@ def get_active_vm_names(token):
     resp = requests.get(url, headers=headers)
 
     if resp.status_code == 200:
-        instances = resp.json().get('items', [])
-        vm_names = [instance['name'] for instance in instances]
+        resp_json = resp.json()
+        vm_names = [x['name'] for x in resp_json['items']]
         return vm_names
     else:
         print(resp.content)
-        return []
+        return "Error\n" + resp.content.decode('utf-8')
 
 
 def addWorker(token, num):
